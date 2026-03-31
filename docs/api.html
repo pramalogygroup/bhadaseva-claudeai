@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BhadaSeva API Documentation</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f1e7;
+        --panel: #fffdf8;
+        --panel-strong: #fff8ee;
+        --text: #1f1a17;
+        --muted: #6d635b;
+        --border: #d9c7ae;
+        --accent: #9a3412;
+        --accent-soft: #ffedd5;
+        --public: #14532d;
+        --auth: #1d4ed8;
+        --owner: #7c2d12;
+        --tenant: #5b21b6;
+        --profile: #854d0e;
+        --code: #2d2a26;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(180deg, #f4ead9 0%, var(--bg) 100%);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      a {
+        color: var(--accent);
+      }
+
+      code,
+      pre {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo,
+          monospace;
+        color: var(--code);
+      }
+
+      .page {
+        width: min(1200px, calc(100% - 2rem));
+        margin: 0 auto;
+        padding: 2rem 0 4rem;
+      }
+
+      .hero {
+        background: radial-gradient(circle at top left, #ffe6bf 0, transparent 45%),
+          linear-gradient(135deg, #fff6ea 0%, #f9ecda 100%);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 2rem;
+        box-shadow: 0 18px 45px rgba(114, 74, 38, 0.08);
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.2;
+        margin-top: 0;
+      }
+
+      h1 {
+        font-size: clamp(2rem, 3vw, 3rem);
+        margin-bottom: 0.75rem;
+      }
+
+      h2 {
+        font-size: 1.7rem;
+        margin-bottom: 1rem;
+      }
+
+      h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.75rem;
+      }
+
+      p {
+        margin: 0.4rem 0 1rem;
+      }
+
+      .lede {
+        max-width: 70ch;
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      .note,
+      .legend,
+      .toc,
+      .summary,
+      .endpoint {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        box-shadow: 0 12px 30px rgba(114, 74, 38, 0.05);
+      }
+
+      .note,
+      .legend,
+      .toc,
+      .summary {
+        padding: 1.25rem 1.5rem;
+        margin-top: 1.25rem;
+      }
+
+      .legend-list,
+      .toc ul,
+      .kv,
+      .fields,
+      .responses,
+      .errors,
+      .notes {
+        margin: 0;
+        padding-left: 1.1rem;
+      }
+
+      .legend-list li,
+      .toc li,
+      .kv li,
+      .fields li,
+      .responses li,
+      .errors li,
+      .notes li {
+        margin: 0.3rem 0;
+      }
+
+      .section {
+        margin-top: 2rem;
+      }
+
+      .summary table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+      }
+
+      .summary th,
+      .summary td {
+        text-align: left;
+        padding: 0.8rem 0.7rem;
+        border-bottom: 1px solid rgba(217, 199, 174, 0.7);
+        vertical-align: top;
+      }
+
+      .summary th {
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .summary tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .endpoint-grid {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .endpoint {
+        padding: 1.4rem 1.5rem;
+      }
+
+      .endpoint-header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+        align-items: center;
+        margin-bottom: 0.9rem;
+      }
+
+      .method,
+      .auth-badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 0.25rem 0.7rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+      }
+
+      .method {
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+
+      .auth-public {
+        background: rgba(20, 83, 45, 0.12);
+        color: var(--public);
+      }
+
+      .auth-authenticated {
+        background: rgba(29, 78, 216, 0.12);
+        color: var(--auth);
+      }
+
+      .auth-owner {
+        background: rgba(124, 45, 18, 0.12);
+        color: var(--owner);
+      }
+
+      .auth-tenant {
+        background: rgba(91, 33, 182, 0.12);
+        color: var(--tenant);
+      }
+
+      .auth-profile {
+        background: rgba(133, 77, 14, 0.12);
+        color: var(--profile);
+      }
+
+      .path {
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+
+      .endpoint-body {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1rem;
+      }
+
+      .card {
+        background: var(--panel-strong);
+        border: 1px solid rgba(217, 199, 174, 0.8);
+        border-radius: 16px;
+        padding: 1rem;
+      }
+
+      .card h4 {
+        margin: 0 0 0.5rem;
+        font-size: 0.95rem;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .small {
+        font-size: 0.92rem;
+      }
+
+      .mono {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo,
+          monospace;
+      }
+
+      @media (max-width: 760px) {
+        .page {
+          width: min(100% - 1rem, 100%);
+          padding-top: 1rem;
+        }
+
+        .hero,
+        .note,
+        .legend,
+        .toc,
+        .summary,
+        .endpoint {
+          border-radius: 16px;
+        }
+
+        .summary {
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <h1>BhadaSeva API Documentation</h1>
+        <p class="lede">
+          Detailed reference for every implemented route under
+          <code>src/app/api</code> in the current codebase. This document is
+          hand-authored from the active route handlers and validation schemas,
+          so it reflects the API behavior as currently implemented rather than
+          an idealized contract.
+        </p>
+        <p class="small muted">
+          Generated from code review of Next.js App Router route files,
+          validation schemas, and model usage. Responses are described at a high
+          level because many handlers return raw Mongoose documents.
+        </p>
+      </section>
+
+      <section class="legend">
+        <h2>Auth Legend</h2>
+        <ul class="legend-list">
+          <li><strong>Public</strong>: no session required.</li>
+          <li><strong>Authenticated</strong>: any signed-in user session.</li>
+          <li>
+            <strong>Owner-scoped</strong>: requires auth and is intended for
+            owner operations or owner-owned resources.
+          </li>
+          <li>
+            <strong>Tenant-scoped</strong>: requires auth and returns tenant
+            data for the current tenant profile.
+          </li>
+          <li>
+            <strong>Profile-dependent</strong>: requires auth and behavior
+            changes based on the active owner/tenant profile.
+          </li>
+        </ul>
+      </section>
+
+      <section class="note">
+        <h2>Important Notes</h2>
+        <ul class="notes">
+          <li>
+            Several <code>POST</code> and <code>PATCH</code> handlers accept
+            request bodies and pass fields directly into Mongoose operations.
+            The practical fields documented here are based on current models and
+            route usage, but some handlers do not strictly whitelist fields.
+          </li>
+          <li>
+            Some routes only check for an authenticated session and rely on
+            session profile fields such as
+            <code>ownerProfileId</code>/<code>tenantProfileId</code> to scope
+            data.
+          </li>
+          <li>
+            The NextAuth catch-all route powers sign-in/session flows and is not
+            a typical business CRUD endpoint.
+          </li>
+        </ul>
+      </section>
+
+      <section class="toc">
+        <h2>Table of Contents</h2>
+        <ul>
+          <li><a href="#auth-users">Authentication and Users</a></li>
+          <li><a href="#profiles">Profiles</a></li>
+          <li><a href="#properties-units">Properties and Units</a></li>
+          <li><a href="#leases">Leases</a></li>
+          <li><a href="#payments">Payments</a></li>
+          <li><a href="#invoices">Invoices</a></li>
+          <li><a href="#marketplace-listings">Marketplace Listings</a></li>
+          <li><a href="#team">Team</a></li>
+        </ul>
+      </section>
+
+      <section class="summary section">
+        <h2>Endpoint Summary</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Path</th>
+              <th>Auth</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>GET</td><td>/api/auth/[...nextauth]</td><td>Public</td><td>NextAuth-managed auth/session endpoint.</td></tr>
+            <tr><td>POST</td><td>/api/auth/[...nextauth]</td><td>Public</td><td>NextAuth-managed sign-in/auth callback endpoint.</td></tr>
+            <tr><td>POST</td><td>/api/users</td><td>Public</td><td>Create a user account.</td></tr>
+            <tr><td>POST</td><td>/api/users/switch-profile</td><td>Authenticated</td><td>Switch active profile between owner and tenant.</td></tr>
+            <tr><td>POST</td><td>/api/profiles/owner</td><td>Authenticated</td><td>Create the current user’s owner profile.</td></tr>
+            <tr><td>POST</td><td>/api/profiles/tenant</td><td>Authenticated</td><td>Create the current user’s tenant profile.</td></tr>
+            <tr><td>GET</td><td>/api/properties</td><td>Owner-scoped</td><td>List properties for the current owner profile.</td></tr>
+            <tr><td>POST</td><td>/api/properties</td><td>Owner-scoped</td><td>Create a property for the current owner profile.</td></tr>
+            <tr><td>GET</td><td>/api/properties/[id]</td><td>Owner-scoped</td><td>Fetch one owner-owned property.</td></tr>
+            <tr><td>PATCH</td><td>/api/properties/[id]</td><td>Owner-scoped</td><td>Update one owner-owned property.</td></tr>
+            <tr><td>DELETE</td><td>/api/properties/[id]</td><td>Owner-scoped</td><td>Delete a property and its units.</td></tr>
+            <tr><td>GET</td><td>/api/properties/[id]/units</td><td>Owner-scoped</td><td>List units for one owner-owned property.</td></tr>
+            <tr><td>POST</td><td>/api/properties/[id]/units</td><td>Owner-scoped</td><td>Create a unit under a property.</td></tr>
+            <tr><td>GET</td><td>/api/properties/[id]/units/[unitId]</td><td>Owner-scoped</td><td>Fetch one unit under a property.</td></tr>
+            <tr><td>PATCH</td><td>/api/properties/[id]/units/[unitId]</td><td>Owner-scoped</td><td>Update one unit under a property.</td></tr>
+            <tr><td>DELETE</td><td>/api/properties/[id]/units/[unitId]</td><td>Owner-scoped</td><td>Delete a unit and decrement property unit count.</td></tr>
+            <tr><td>POST</td><td>/api/properties/[id]/units/[unitId]/assign</td><td>Owner-scoped</td><td>Assign a tenant to a vacant unit and create a lease.</td></tr>
+            <tr><td>GET</td><td>/api/leases</td><td>Profile-dependent</td><td>List leases for the active owner or tenant profile.</td></tr>
+            <tr><td>GET</td><td>/api/leases/[id]</td><td>Authenticated</td><td>Fetch one lease with populated relations.</td></tr>
+            <tr><td>PATCH</td><td>/api/leases/[id]</td><td>Owner-scoped</td><td>Update an owner-owned lease.</td></tr>
+            <tr><td>POST</td><td>/api/leases/[id]/terminate</td><td>Owner-scoped</td><td>Terminate a lease and mark the unit vacant.</td></tr>
+            <tr><td>GET</td><td>/api/payments</td><td>Profile-dependent</td><td>List payments filtered by the active profile.</td></tr>
+            <tr><td>POST</td><td>/api/payments</td><td>Owner-scoped</td><td>Create a rent payment record.</td></tr>
+            <tr><td>GET</td><td>/api/payments/[id]</td><td>Authenticated</td><td>Fetch one payment by id.</td></tr>
+            <tr><td>PATCH</td><td>/api/payments/[id]</td><td>Authenticated</td><td>Update one payment by id.</td></tr>
+            <tr><td>GET</td><td>/api/invoices</td><td>Profile-dependent</td><td>List invoices for the active profile.</td></tr>
+            <tr><td>POST</td><td>/api/invoices</td><td>Owner-scoped</td><td>Create an invoice with a generated invoice number.</td></tr>
+            <tr><td>GET</td><td>/api/invoices/[id]</td><td>Authenticated</td><td>Fetch one invoice with populated relations.</td></tr>
+            <tr><td>PATCH</td><td>/api/invoices/[id]</td><td>Authenticated</td><td>Update one invoice by id.</td></tr>
+            <tr><td>GET</td><td>/api/listings</td><td>Public</td><td>Search and filter public marketplace listings.</td></tr>
+            <tr><td>GET</td><td>/api/listings/[id]</td><td>Public</td><td>Fetch one public listing and increment its view count.</td></tr>
+            <tr><td>GET</td><td>/api/team</td><td>Owner-scoped</td><td>List team members for the current owner profile.</td></tr>
+            <tr><td>POST</td><td>/api/team</td><td>Owner-scoped</td><td>Create a team member invite record.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="auth-users" class="section">
+        <h2>Authentication and Users</h2>
+        <div class="endpoint-grid">
+          <article id="get-api-auth-nextauth" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">GET</span>
+              <span class="auth-badge auth-public">Public</span>
+              <span class="path mono">/api/auth/[...nextauth]</span>
+            </div>
+            <p>Delegates to NextAuth. Used for built-in auth/session flows such as fetching session-related state or auth pages handled by NextAuth.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Purpose</h4><p class="small">Framework-managed auth endpoint exposed by <code>NextAuth(authOptions)</code>.</p></section>
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>[...nextauth]</code>: catch-all segment consumed by NextAuth internals.</li></ul></section>
+              <section class="card"><h4>Query Params</h4><p class="small">Varies by NextAuth action and provider flow.</p></section>
+              <section class="card"><h4>Request Body</h4><p class="small">None for normal GET requests.</p></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li>Returns NextAuth-managed responses for session/auth actions.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li>Depends on NextAuth action and auth state.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="post-api-auth-nextauth" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">POST</span>
+              <span class="auth-badge auth-public">Public</span>
+              <span class="path mono">/api/auth/[...nextauth]</span>
+            </div>
+            <p>Delegates to NextAuth for sign-in, credential submission, callbacks, and related auth actions.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Purpose</h4><p class="small">Handles credential sign-in and other NextAuth POST actions.</p></section>
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>[...nextauth]</code>: NextAuth action route segment.</li></ul></section>
+              <section class="card"><h4>Request Body</h4><p class="small">Varies by NextAuth action. For credentials auth, body ultimately includes email and password fields expected by the configured credentials provider.</p></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li>Returns NextAuth-managed sign-in/callback response.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li>Credential or callback failures surface through NextAuth error handling.</li></ul></section>
+              <section class="card"><h4>Notes</h4><ul class="notes"><li>Configured auth provider is credentials-based using email and password.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="post-api-users" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">POST</span>
+              <span class="auth-badge auth-public">Public</span>
+              <span class="path mono">/api/users</span>
+            </div>
+            <p>Create a new user account.</p>
+            <div class="endpoint-body">
+              <section class="card">
+                <h4>Request Body</h4>
+                <ul class="fields">
+                  <li><code>name</code> (string, required, min length 2)</li>
+                  <li><code>email</code> (string, required, valid email)</li>
+                  <li><code>phone</code> (string, optional)</li>
+                  <li><code>password</code> (string, required, min length 6)</li>
+                  <li><code>confirmPassword</code> (string, required, must match <code>password</code>)</li>
+                </ul>
+              </section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>201</code> with created user object excluding password.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>400</code> invalid input.</li><li><code>409</code> email already exists.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Notes</h4><ul class="notes"><li>Email is lowercased before lookup/storage.</li><li>Password is hashed with bcrypt before persistence.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="post-api-users-switch-profile" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">POST</span>
+              <span class="auth-badge auth-authenticated">Authenticated</span>
+              <span class="path mono">/api/users/switch-profile</span>
+            </div>
+            <p>Switch the signed-in user’s active profile between owner and tenant.</p>
+            <div class="endpoint-body">
+              <section class="card">
+                <h4>Request Body</h4>
+                <ul class="fields">
+                  <li><code>profileType</code> (string, required): <code>owner</code> or <code>tenant</code></li>
+                </ul>
+              </section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with success message and the new <code>activeProfileType</code>.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>400</code> invalid profile type or profile not enabled.</li><li><code>404</code> user not found.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Notes</h4><ul class="notes"><li>The requested profile type must already be present in <code>enabledProfiles</code>.</li></ul></section>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="profiles" class="section">
+        <h2>Profiles</h2>
+        <div class="endpoint-grid">
+          <article id="post-api-profiles-owner" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">POST</span>
+              <span class="auth-badge auth-authenticated">Authenticated</span>
+              <span class="path mono">/api/profiles/owner</span>
+            </div>
+            <p>Create an owner profile for the current signed-in user.</p>
+            <div class="endpoint-body">
+              <section class="card">
+                <h4>Request Body</h4>
+                <ul class="fields">
+                  <li><code>displayName</code> (string, required)</li>
+                  <li><code>address</code> (string, required)</li>
+                  <li><code>ward</code> (string, optional)</li>
+                  <li><code>district</code> (enum, required): <code>Kathmandu</code>, <code>Lalitpur</code>, <code>Bhaktapur</code></li>
+                  <li><code>contactPhone</code> (string, required)</li>
+                  <li><code>contactEmail</code> (string, required, valid email)</li>
+                  <li><code>panNumber</code> (string, optional)</li>
+                  <li><code>bio</code> (string, optional)</li>
+                </ul>
+              </section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>201</code> with created owner profile.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>400</code> validation error.</li><li><code>409</code> owner profile already exists.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Notes</h4><ul class="notes"><li>Also updates the user with <code>ownerProfileId</code>, enables the owner profile, and sets <code>activeProfileType</code> to <code>owner</code>.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="post-api-profiles-tenant" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">POST</span>
+              <span class="auth-badge auth-authenticated">Authenticated</span>
+              <span class="path mono">/api/profiles/tenant</span>
+            </div>
+            <p>Create a tenant profile for the current signed-in user.</p>
+            <div class="endpoint-body">
+              <section class="card">
+                <h4>Request Body</h4>
+                <ul class="fields">
+                  <li><code>displayName</code> (string, required)</li>
+                  <li><code>occupation</code> (string, optional)</li>
+                  <li><code>employerName</code> (string, optional)</li>
+                  <li><code>permanentAddress</code> (string, optional)</li>
+                  <li><code>emergencyContactName</code> (string, optional)</li>
+                  <li><code>emergencyContactPhone</code> (string, optional)</li>
+                  <li><code>citizenshipNumber</code> (string, optional)</li>
+                </ul>
+              </section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>201</code> with created tenant profile.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>400</code> validation error.</li><li><code>409</code> tenant profile already exists.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Notes</h4><ul class="notes"><li>Enables the tenant profile on the user record.</li><li>If the user has no active profile yet, this route sets <code>activeProfileType</code> to <code>tenant</code>.</li></ul></section>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="properties-units" class="section">
+        <h2>Properties and Units</h2>
+        <div class="endpoint-grid">
+          <article id="get-api-properties" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">GET</span>
+              <span class="auth-badge auth-owner">Owner-scoped</span>
+              <span class="path mono">/api/properties</span>
+            </div>
+            <p>List properties owned by the current owner profile.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Query Params</h4><p class="small">None.</p></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with array of property documents filtered by <code>session.user.ownerProfileId</code>.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>500</code> internal server error.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="post-api-properties" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">POST</span>
+              <span class="auth-badge auth-owner">Owner-scoped</span>
+              <span class="path mono">/api/properties</span>
+            </div>
+            <p>Create a property for the current owner profile.</p>
+            <div class="endpoint-body">
+              <section class="card">
+                <h4>Request Body</h4>
+                <ul class="fields">
+                  <li><code>name</code> (string, expected)</li>
+                  <li><code>address</code> (string, expected)</li>
+                  <li><code>ward</code> (string, optional)</li>
+                  <li><code>district</code> (enum, expected): <code>Kathmandu</code>, <code>Lalitpur</code>, <code>Bhaktapur</code></li>
+                  <li><code>type</code> (enum, expected): <code>room</code>, <code>hostel</code>, <code>apartment</code>, <code>flat</code>, <code>house</code></li>
+                  <li><code>description</code> (string, optional)</li>
+                  <li><code>photos</code> (string array, optional)</li>
+                  <li><code>amenities</code> (string array, optional)</li>
+                  <li><code>totalUnits</code> (number, optional)</li>
+                </ul>
+              </section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>201</code> with created property.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Notes</h4><ul class="notes"><li>The handler force-injects <code>ownerProfileId</code> from the session.</li><li>Although a property validation schema exists in the repo, this route currently does not invoke it server-side.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="get-api-properties-id" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">GET</span>
+              <span class="auth-badge auth-owner">Owner-scoped</span>
+              <span class="path mono">/api/properties/[id]</span>
+            </div>
+            <p>Fetch a single property if it belongs to the current owner profile.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>id</code>: property id.</li></ul></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with the property document.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>404</code> property not found or not owned by the session owner.</li><li><code>500</code> internal server error.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="patch-api-properties-id" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">PATCH</span>
+              <span class="auth-badge auth-owner">Owner-scoped</span>
+              <span class="path mono">/api/properties/[id]</span>
+            </div>
+            <p>Update a single owner-owned property.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>id</code>: property id.</li></ul></section>
+              <section class="card"><h4>Request Body</h4><p class="small">Any practical property fields to update, typically the same shape used during property creation.</p></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with the updated property.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>404</code> property not found or not owned by the session owner.</li><li><code>500</code> internal server error.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="delete-api-properties-id" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">DELETE</span>
+              <span class="auth-badge auth-owner">Owner-scoped</span>
+              <span class="path mono">/api/properties/[id]</span>
+            </div>
+            <p>Delete a property and all of its units.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>id</code>: property id.</li></ul></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with message <code>Property deleted</code>.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>404</code> property not found or not owned by the session owner.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Side Effects</h4><ul class="notes"><li>Deletes all <code>Unit</code> records for the property before deleting the property itself.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="get-api-properties-id-units" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">GET</span>
+              <span class="auth-badge auth-owner">Owner-scoped</span>
+              <span class="path mono">/api/properties/[id]/units</span>
+            </div>
+            <p>List units for one owner-owned property.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>id</code>: property id.</li></ul></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with array of unit documents for the property.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>404</code> property not found or not owned by the session owner.</li><li><code>500</code> internal server error.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="post-api-properties-id-units" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">POST</span>
+              <span class="auth-badge auth-owner">Owner-scoped</span>
+              <span class="path mono">/api/properties/[id]/units</span>
+            </div>
+            <p>Create a new unit under a property.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>id</code>: property id.</li></ul></section>
+              <section class="card">
+                <h4>Request Body</h4>
+                <ul class="fields">
+                  <li><code>unitNumber</code> (string, expected)</li>
+                  <li><code>floor</code> (number, optional)</li>
+                  <li><code>rentAmount</code> (number, expected)</li>
+                  <li><code>deposit</code> (number, expected)</li>
+                  <li><code>status</code> (enum, optional): <code>vacant</code>, <code>occupied</code>, <code>maintenance</code></li>
+                  <li><code>isFurnished</code> (boolean, expected)</li>
+                  <li><code>area</code> (number, optional)</li>
+                  <li><code>photos</code> (string array, optional)</li>
+                  <li><code>currentLeaseId</code> (id, optional)</li>
+                  <li><code>isPublicListing</code> (boolean, expected)</li>
+                </ul>
+              </section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>201</code> with the created unit.</li></ul></section>
+              <section class="card"><h4>Side Effects</h4><ul class="notes"><li>Increments the parent property’s <code>totalUnits</code> by 1.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="get-api-properties-id-units-unitid" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">GET</span>
+              <span class="auth-badge auth-owner">Owner-scoped</span>
+              <span class="path mono">/api/properties/[id]/units/[unitId]</span>
+            </div>
+            <p>Fetch a single unit under an owner-owned property.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>id</code>: property id.</li><li><code>unitId</code>: unit id.</li></ul></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with the unit document.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>404</code> property or unit not found, or ownership mismatch.</li><li><code>500</code> internal server error.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="patch-api-properties-id-units-unitid" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">PATCH</span>
+              <span class="auth-badge auth-owner">Owner-scoped</span>
+              <span class="path mono">/api/properties/[id]/units/[unitId]</span>
+            </div>
+            <p>Update a single unit under an owner-owned property.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>id</code>: property id.</li><li><code>unitId</code>: unit id.</li></ul></section>
+              <section class="card"><h4>Request Body</h4><p class="small">Any practical unit fields to update, matching the unit model.</p></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with updated unit document.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>404</code> property or unit not found, or ownership mismatch.</li><li><code>500</code> internal server error.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="delete-api-properties-id-units-unitid" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">DELETE</span>
+              <span class="auth-badge auth-owner">Owner-scoped</span>
+              <span class="path mono">/api/properties/[id]/units/[unitId]</span>
+            </div>
+            <p>Delete a single unit under an owner-owned property.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>id</code>: property id.</li><li><code>unitId</code>: unit id.</li></ul></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with message <code>Unit deleted</code>.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>404</code> property or unit not found, or ownership mismatch.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Side Effects</h4><ul class="notes"><li>Decrements the parent property’s <code>totalUnits</code> by 1.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="post-api-properties-id-units-unitid-assign" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">POST</span>
+              <span class="auth-badge auth-owner">Owner-scoped</span>
+              <span class="path mono">/api/properties/[id]/units/[unitId]/assign</span>
+            </div>
+            <p>Assign a tenant to a vacant unit and create a lease.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>id</code>: property id.</li><li><code>unitId</code>: unit id.</li></ul></section>
+              <section class="card">
+                <h4>Request Body</h4>
+                <ul class="fields">
+                  <li><code>tenantEmail</code> (string, required)</li>
+                  <li><code>monthlyRent</code> (number, required)</li>
+                  <li><code>depositAmount</code> (number, required)</li>
+                  <li><code>startDate</code> (date/string, required)</li>
+                  <li><code>rentDueDay</code> (number, required, expected 1-28)</li>
+                </ul>
+              </section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>201</code> with the created lease.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>404</code> property or unit not found, or ownership mismatch.</li><li><code>400</code> unit is not vacant, or tenant account/profile not found.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Side Effects</h4><ul class="notes"><li>Creates a <code>Lease</code> with status <code>active</code>.</li><li>Updates the unit to <code>occupied</code> and sets <code>currentLeaseId</code>.</li></ul></section>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="leases" class="section">
+        <h2>Leases</h2>
+        <div class="endpoint-grid">
+          <article id="get-api-leases" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">GET</span>
+              <span class="auth-badge auth-profile">Profile-dependent</span>
+              <span class="path mono">/api/leases</span>
+            </div>
+            <p>List leases for the active owner or tenant profile.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Query Params</h4><p class="small">None.</p></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with leases filtered by <code>ownerProfileId</code> when active profile is owner, otherwise by <code>tenantProfileId</code>.</li><li>Populates unit, property, tenant, and owner references.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>500</code> internal server error.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="get-api-leases-id" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">GET</span>
+              <span class="auth-badge auth-authenticated">Authenticated</span>
+              <span class="path mono">/api/leases/[id]</span>
+            </div>
+            <p>Fetch a single lease with populated relations.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>id</code>: lease id.</li></ul></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with populated lease document.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>404</code> lease not found.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Notes</h4><ul class="notes"><li>This route checks authentication, but does not perform owner/tenant ownership verification beyond existence.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="patch-api-leases-id" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">PATCH</span>
+              <span class="auth-badge auth-owner">Owner-scoped</span>
+              <span class="path mono">/api/leases/[id]</span>
+            </div>
+            <p>Update a lease if it belongs to the current owner profile.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>id</code>: lease id.</li></ul></section>
+              <section class="card"><h4>Request Body</h4><p class="small">Any practical lease fields to update, such as <code>startDate</code>, <code>endDate</code>, <code>monthlyRent</code>, <code>depositAmount</code>, <code>rentDueDay</code>, <code>status</code>, or <code>notes</code>.</p></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with updated lease document.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>404</code> lease not found or not owned by the session owner.</li><li><code>500</code> internal server error.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="post-api-leases-id-terminate" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">POST</span>
+              <span class="auth-badge auth-owner">Owner-scoped</span>
+              <span class="path mono">/api/leases/[id]/terminate</span>
+            </div>
+            <p>Terminate a lease and release the assigned unit.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>id</code>: lease id.</li></ul></section>
+              <section class="card"><h4>Request Body</h4><p class="small">None.</p></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with the updated lease document.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>404</code> lease not found or not owned by the session owner.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Side Effects</h4><ul class="notes"><li>Sets lease <code>status</code> to <code>terminated</code>.</li><li>Updates the related unit to <code>vacant</code> and unsets <code>currentLeaseId</code>.</li></ul></section>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="payments" class="section">
+        <h2>Payments</h2>
+        <div class="endpoint-grid">
+          <article id="get-api-payments" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">GET</span>
+              <span class="auth-badge auth-profile">Profile-dependent</span>
+              <span class="path mono">/api/payments</span>
+            </div>
+            <p>List payments filtered by the active owner or tenant profile.</p>
+            <div class="endpoint-body">
+              <section class="card">
+                <h4>Query Params</h4>
+                <ul class="fields">
+                  <li><code>month</code> (string, optional): filter by payment month identifier such as <code>YYYY-MM</code>.</li>
+                  <li><code>status</code> (string, optional): filter by payment status.</li>
+                </ul>
+              </section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with populated payment documents sorted by <code>dueDate</code> descending.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Notes</h4><ul class="notes"><li>Uses <code>ownerProfileId</code> when active profile is owner, otherwise <code>tenantProfileId</code>.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="post-api-payments" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">POST</span>
+              <span class="auth-badge auth-owner">Owner-scoped</span>
+              <span class="path mono">/api/payments</span>
+            </div>
+            <p>Create a rent payment record.</p>
+            <div class="endpoint-body">
+              <section class="card">
+                <h4>Request Body</h4>
+                <ul class="fields">
+                  <li><code>leaseId</code> (id, expected)</li>
+                  <li><code>unitId</code> (id, expected)</li>
+                  <li><code>tenantProfileId</code> (id, expected)</li>
+                  <li><code>amount</code> (number, expected)</li>
+                  <li><code>month</code> (string, expected)</li>
+                  <li><code>dueDate</code> (date/string, expected)</li>
+                  <li><code>paidDate</code> (date/string, optional)</li>
+                  <li><code>status</code> (enum, optional): <code>pending</code>, <code>paid</code>, <code>overdue</code></li>
+                  <li><code>paymentMethod</code> (enum, optional): <code>cash</code>, <code>khalti</code>, <code>esewa</code>, <code>bank_transfer</code>, <code>other</code></li>
+                  <li><code>notes</code> (string, optional)</li>
+                </ul>
+              </section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>201</code> with created payment document.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Notes</h4><ul class="notes"><li>The route sets <code>ownerProfileId</code> from the current session.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="get-api-payments-id" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">GET</span>
+              <span class="auth-badge auth-authenticated">Authenticated</span>
+              <span class="path mono">/api/payments/[id]</span>
+            </div>
+            <p>Fetch a payment by id.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>id</code>: payment id.</li></ul></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with payment document.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>404</code> payment not found.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Notes</h4><ul class="notes"><li>This route checks only that the caller is authenticated, not that the payment belongs to the caller’s profile.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="patch-api-payments-id" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">PATCH</span>
+              <span class="auth-badge auth-authenticated">Authenticated</span>
+              <span class="path mono">/api/payments/[id]</span>
+            </div>
+            <p>Update a payment by id.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>id</code>: payment id.</li></ul></section>
+              <section class="card"><h4>Request Body</h4><p class="small">Any practical payment fields to update.</p></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with updated payment document.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>404</code> payment not found.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Notes</h4><ul class="notes"><li>This route also lacks ownership checks beyond requiring an authenticated session.</li></ul></section>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="invoices" class="section">
+        <h2>Invoices</h2>
+        <div class="endpoint-grid">
+          <article id="get-api-invoices" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">GET</span>
+              <span class="auth-badge auth-profile">Profile-dependent</span>
+              <span class="path mono">/api/invoices</span>
+            </div>
+            <p>List invoices for the active owner or tenant profile.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Query Params</h4><p class="small">None.</p></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with invoices filtered by owner profile or tenant profile depending on active profile.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>500</code> internal server error.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="post-api-invoices" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">POST</span>
+              <span class="auth-badge auth-owner">Owner-scoped</span>
+              <span class="path mono">/api/invoices</span>
+            </div>
+            <p>Create an invoice with a generated invoice number.</p>
+            <div class="endpoint-body">
+              <section class="card">
+                <h4>Request Body</h4>
+                <ul class="fields">
+                  <li><code>tenantProfileId</code> (id, expected)</li>
+                  <li><code>leaseId</code> (id, expected)</li>
+                  <li><code>items</code> (array, expected): each item typically includes <code>description</code>, <code>amount</code>, <code>quantity</code>, <code>total</code></li>
+                  <li><code>subtotal</code> (number, optional)</li>
+                  <li><code>tax</code> (number, optional)</li>
+                  <li><code>discount</code> (number, optional)</li>
+                  <li><code>total</code> (number, required)</li>
+                  <li><code>status</code> (enum, optional): <code>draft</code>, <code>sent</code>, <code>paid</code>, <code>overdue</code></li>
+                  <li><code>dueDate</code> (date/string, required)</li>
+                  <li><code>paidDate</code> (date/string, optional)</li>
+                  <li><code>notes</code> (string, optional)</li>
+                </ul>
+              </section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>201</code> with created invoice.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Side Effects</h4><ul class="notes"><li>Generates <code>invoiceNumber</code> server-side.</li><li>Sets <code>ownerProfileId</code> from the current session.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="get-api-invoices-id" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">GET</span>
+              <span class="auth-badge auth-authenticated">Authenticated</span>
+              <span class="path mono">/api/invoices/[id]</span>
+            </div>
+            <p>Fetch one invoice with populated tenant and lease relations.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>id</code>: invoice id.</li></ul></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with populated invoice document.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>404</code> invoice not found.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Notes</h4><ul class="notes"><li>This route checks only authentication and does not verify invoice ownership.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="patch-api-invoices-id" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">PATCH</span>
+              <span class="auth-badge auth-authenticated">Authenticated</span>
+              <span class="path mono">/api/invoices/[id]</span>
+            </div>
+            <p>Update an invoice by id.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>id</code>: invoice id.</li></ul></section>
+              <section class="card"><h4>Request Body</h4><p class="small">Any practical invoice fields to update.</p></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with updated invoice document.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>404</code> invoice not found.</li><li><code>500</code> internal server error.</li></ul></section>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="marketplace-listings" class="section">
+        <h2>Marketplace Listings</h2>
+        <div class="endpoint-grid">
+          <article id="get-api-listings" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">GET</span>
+              <span class="auth-badge auth-public">Public</span>
+              <span class="path mono">/api/listings</span>
+            </div>
+            <p>Search and filter active public marketplace listings.</p>
+            <div class="endpoint-body">
+              <section class="card">
+                <h4>Query Params</h4>
+                <ul class="fields">
+                  <li><code>q</code> (string, optional): case-insensitive title search.</li>
+                  <li><code>type</code> (string, optional): listing/property type.</li>
+                  <li><code>district</code> (string, optional): district filter.</li>
+                  <li><code>minPrice</code> (number-like string, optional): minimum rent amount.</li>
+                  <li><code>maxPrice</code> (number-like string, optional): maximum rent amount.</li>
+                  <li><code>furnished</code> (string, optional): only <code>true</code> activates furnished filtering.</li>
+                </ul>
+              </section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with up to 50 active listings sorted by newest first.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Notes</h4><ul class="notes"><li>Always applies <code>isActive: true</code>.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="get-api-listings-id" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">GET</span>
+              <span class="auth-badge auth-public">Public</span>
+              <span class="path mono">/api/listings/[id]</span>
+            </div>
+            <p>Fetch one active listing and increment its view count.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Path Params</h4><ul class="kv"><li><code>id</code>: listing id.</li></ul></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with listing document populated with owner contact fields.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>404</code> listing not found or inactive.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Side Effects</h4><ul class="notes"><li>Increments <code>viewCount</code> by 1 after fetching the listing.</li></ul></section>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="team" class="section">
+        <h2>Team</h2>
+        <div class="endpoint-grid">
+          <article id="get-api-team" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">GET</span>
+              <span class="auth-badge auth-owner">Owner-scoped</span>
+              <span class="path mono">/api/team</span>
+            </div>
+            <p>List team members for the current owner profile.</p>
+            <div class="endpoint-body">
+              <section class="card"><h4>Query Params</h4><p class="small">None.</p></section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>200</code> with team members populated with <code>userId</code> name/email when available.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>500</code> internal server error.</li></ul></section>
+            </div>
+          </article>
+
+          <article id="post-api-team" class="endpoint">
+            <div class="endpoint-header">
+              <span class="method">POST</span>
+              <span class="auth-badge auth-owner">Owner-scoped</span>
+              <span class="path mono">/api/team</span>
+            </div>
+            <p>Create a team member invite record for the current owner profile.</p>
+            <div class="endpoint-body">
+              <section class="card">
+                <h4>Request Body</h4>
+                <ul class="fields">
+                  <li><code>email</code> (string, required): stored as <code>inviteEmail</code></li>
+                  <li><code>role</code> (enum/string, expected): typically <code>manager</code> or <code>viewer</code></li>
+                  <li><code>permissions</code> (object, expected) with optional booleans:
+                    <code>canAddTenants</code>,
+                    <code>canRecordPayments</code>,
+                    <code>canViewReports</code>,
+                    <code>canManageUnits</code>
+                  </li>
+                </ul>
+              </section>
+              <section class="card"><h4>Success</h4><ul class="responses"><li><code>201</code> with created team member record.</li></ul></section>
+              <section class="card"><h4>Errors</h4><ul class="errors"><li><code>401</code> unauthorized.</li><li><code>500</code> internal server error.</li></ul></section>
+              <section class="card"><h4>Side Effects</h4><ul class="notes"><li>Invite token and expiry are generated by the model defaults.</li></ul></section>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
